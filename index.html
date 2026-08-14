@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мурчик — кот, который мурчит по-настоящему</title>
+<meta name="description" content="Тамагочи-кот для Android. Гладишь — он мурчит, и телефон вибрирует в такт настоящему кошачьему мурчанию.">
+<style>
+  :root {
+    --bg: #FFF6EC;
+    --bg2: #FFD9B0;
+    --ink: #3B2E26;
+    --muted: #7A6659;
+    --cat: #9AA3B0;
+    --accent: #D9803F;
+    --bubble: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17131F; --bg2: #2A2333; --ink: #F1E6DC;
+      --muted: #A8998F; --bubble: #241D2C;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: linear-gradient(170deg, var(--bg), var(--bg2));
+    min-height: 100vh;
+    padding: 48px 20px 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap { width: 100%; max-width: 560px; }
+  h1 { font-size: 34px; letter-spacing: -0.5px; text-align: center; }
+  .sub { color: var(--muted); text-align: center; margin-top: 8px; font-size: 17px; }
+
+  .cat { display: block; margin: 26px auto 8px; width: 210px; cursor: pointer; }
+  .cat:active { transform: scale(0.97); }
+
+  .chat { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .row { display: flex; gap: 10px; align-items: flex-end; opacity: 0; transform: translateY(8px); }
+  .row.on { opacity: 1; transform: none; transition: opacity .45s ease, transform .45s ease; }
+  .paw {
+    width: 34px; height: 34px; flex: none; border-radius: 50%;
+    background: var(--cat); display: grid; place-items: center; font-size: 17px;
+  }
+  .bubble {
+    background: var(--bubble); padding: 12px 16px; border-radius: 18px 18px 18px 6px;
+    font-size: 17px; line-height: 1.4; box-shadow: 0 3px 14px rgba(0,0,0,.07);
+  }
+  .me { justify-content: flex-end; }
+  .me .bubble { background: var(--accent); color: #fff; border-radius: 18px 18px 6px 18px; }
+
+  .cta {
+    display: block; margin: 32px auto 0; text-align: center; text-decoration: none;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 18px;
+    padding: 16px 28px; border-radius: 999px; max-width: 320px;
+    box-shadow: 0 8px 22px rgba(217,128,63,.35);
+  }
+  .foot { text-align: center; color: var(--muted); font-size: 14px; margin-top: 18px; }
+  .foot a { color: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Мурчик</h1>
+  <p class="sub">Кот, который мурчит по-настоящему</p>
+
+  <!-- Тот же кот, что в приложении: те же пропорции и цвета, только в SVG. -->
+  <svg class="cat" id="cat" viewBox="0 0 100 100" aria-label="Кот">
+    <ellipse cx="50" cy="95" rx="30" ry="3" fill="#000" opacity=".08"/>
+    <path d="M66 86 C94 93 103 62 85 50" stroke="var(--cat)" stroke-width="9.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="50" cy="73" rx="28" ry="24" fill="var(--cat)"/>
+    <ellipse cx="50" cy="78" rx="14.5" ry="16.5" fill="#E3E7EE"/>
+    <path d="M30 28 L44.5 18.5 L27.5 6.5 Z" fill="var(--cat)"/>
+    <path d="M70 28 L55.5 18.5 L72.5 6.5 Z" fill="var(--cat)"/>
+    <path d="M33 26 L43 20 L31 12 Z" fill="#EDA8AE"/>
+    <path d="M67 26 L57 20 L69 12 Z" fill="#EDA8AE"/>
+    <ellipse cx="50" cy="35.5" rx="23.5" ry="20" fill="var(--cat)"/>
+    <ellipse cx="50" cy="46" rx="12.5" ry="7.5" fill="#E3E7EE" opacity=".92"/>
+    <g id="eyes">
+      <ellipse cx="41.5" cy="35.5" rx="5.2" ry="6.8" fill="#7FD0C8"/>
+      <ellipse cx="58.5" cy="35.5" rx="5.2" ry="6.8" fill="#7FD0C8"/>
+      <ellipse cx="41.5" cy="35.5" rx="1.8" ry="5.6" fill="#211A22"/>
+      <ellipse cx="58.5" cy="35.5" rx="1.8" ry="5.6" fill="#211A22"/>
+      <circle cx="39.6" cy="33.4" r="1.5" fill="#fff" opacity=".9"/>
+      <circle cx="56.6" cy="33.4" r="1.5" fill="#fff" opacity=".9"/>
+    </g>
+    <path d="M47.4 44.2 L52.6 44.2 L50 47.5 Z" fill="#E79AA4"/>
+    <path d="M50 47.8 q-2.8 3.9 -5.6 .9 M50 47.8 q2.8 3.9 5.6 .9" stroke="#737D8C" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <g stroke="#fff" stroke-width=".8" stroke-linecap="round" opacity=".9">
+      <path d="M43.8 45.2 L20 42.5"/><path d="M43.8 47.1 L20 47.6"/><path d="M43.8 49 L21 52.4"/>
+      <path d="M56.2 45.2 L80 42.5"/><path d="M56.2 47.1 L80 47.6"/><path d="M56.2 49 L79 52.4"/>
+    </g>
+  </svg>
+
+  <div class="chat" id="chat"></div>
+
+  <a class="cta" href="https://github.com/Miolonixc/MiaoMurApp/releases/latest">Скачать для Android</a>
+  <p class="foot">
+    Требуется Android 12+ · <a href="https://github.com/Miolonixc/MiaoMurApp">исходный код</a>
+  </p>
+</div>
+
+<script>
+  // Разговор кота: реплики появляются по одной, чтобы читалось как беседа.
+  const lines = [
+    ['cat', 'Мяу. Ты меня погладишь?'],
+    ['me',  'А что будет?'],
+    ['cat', 'Замурчу. По-настоящему: телефон завибрирует 25 раз в секунду, как настоящее мурчание.'],
+    ['cat', 'Если гладить долго и мне будет хорошо — перейду на низкий рокот. Как трактор.'],
+    ['me',  'А куда тебя гладить?'],
+    ['cat', 'За ушком лучше всего. Пузико тоже, но только когда я тебе доверяю. Иначе поймаю руку лапами.'],
+    ['cat', 'Ещё я ловлю мышек, дышу вместе с тобой, сторожу время и живу на твоих обоях.'],
+    ['me',  'Ты вообще спишь?'],
+    ['cat', 'Сплю. И жду, когда ты вернёшься.'],
+  ];
+
+  const chat = document.getElementById('chat');
+  lines.forEach(([who, text], i) => {
+    const row = document.createElement('div');
+    row.className = 'row' + (who === 'me' ? ' me' : '');
+    row.innerHTML = (who === 'cat' ? '<div class="paw">🐾</div>' : '') +
+                    '<div class="bubble"></div>';
+    row.querySelector('.bubble').textContent = text;
+    chat.appendChild(row);
+    setTimeout(() => row.classList.add('on'), 250 + i * 550);
+  });
+
+  // Кот моргает сам и жмурится, если его погладить.
+  const eyes = document.getElementById('eyes');
+  setInterval(() => {
+    eyes.style.transition = 'transform .09s';
+    eyes.style.transform = 'scaleY(.1)';
+    eyes.style.transformOrigin = '50% 35.5px';
+    setTimeout(() => (eyes.style.transform = 'scaleY(1)'), 110);
+  }, 4200);
+
+  document.getElementById('cat').addEventListener('click', () => {
+    if (navigator.vibrate) {
+      // Тот же ритм, что в приложении: короткий толчок, пауза, снова.
+      navigator.vibrate([15, 26, 15, 26, 15, 26, 15, 26, 15, 26, 15, 26]);
+    }
+    const bubble = document.createElement('div');
+    bubble.className = 'row on';
+    bubble.innerHTML = '<div class="paw">🐾</div><div class="bubble">мур-р-р-р…</div>';
+    chat.appendChild(bubble);
+    bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>
+</body>
+</html>
