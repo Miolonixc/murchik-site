@@ -4,152 +4,334 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Мурчик — кот, который мурчит по-настоящему</title>
-<meta name="description" content="Тамагочи-кот для Android. Гладишь — он мурчит, и телефон вибрирует в такт настоящему кошачьему мурчанию.">
+<meta name="description" content="Тамагочи-кот для Android: гладите пальцем — телефон вибрирует в такт мурчанию. Попробуйте прямо на странице.">
+<meta property="og:title" content="Мурчик — кот, который мурчит по-настоящему">
+<meta property="og:description" content="Погладьте кота прямо здесь: он замурчит вслух, а телефон — в руку.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
 <style>
   :root {
-    --bg: #FFF6EC;
-    --bg2: #FFD9B0;
-    --ink: #3B2E26;
-    --muted: #7A6659;
-    --cat: #9AA3B0;
-    --accent: #D9803F;
-    --bubble: #FFFFFF;
+    --bg1: #fdf3ea; --bg2: #f7dcc9;
+    --card: #fffaf5; --ink: #3b3038; --muted: #8b7680;
+    --accent: #e0864f; --accent2: #c9566a;
+    --cat: #E89B54; --line: #f0dccb;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #17131F; --bg2: #2A2333; --ink: #F1E6DC;
-      --muted: #A8998F; --bubble: #241D2C;
+      --bg1: #241c22; --bg2: #33262e;
+      --card: #2e242b; --ink: #f5eae2; --muted: #b9a6ae;
+      --accent: #f0a878; --accent2: #ef8095;
+      --line: #3f313a;
     }
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    color: var(--ink);
-    background: linear-gradient(170deg, var(--bg), var(--bg2));
-    min-height: 100vh;
-    padding: 48px 20px 64px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 0; min-height: 100svh; color: var(--ink);
+    background: linear-gradient(170deg, var(--bg1), var(--bg2));
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 28px 18px 48px;
   }
-  .wrap { width: 100%; max-width: 560px; }
-  h1 { font-size: 34px; letter-spacing: -0.5px; text-align: center; }
-  .sub { color: var(--muted); text-align: center; margin-top: 8px; font-size: 17px; }
-
-  .cat { display: block; margin: 26px auto 8px; width: 210px; cursor: pointer; }
-  .cat:active { transform: scale(0.97); }
-
-  .chat { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
-  .row { display: flex; gap: 10px; align-items: flex-end; opacity: 0; transform: translateY(8px); }
-  .row.on { opacity: 1; transform: none; transition: opacity .45s ease, transform .45s ease; }
-  .paw {
-    width: 34px; height: 34px; flex: none; border-radius: 50%;
-    background: var(--cat); display: grid; place-items: center; font-size: 17px;
+  main { width: 100%; max-width: 520px; }
+  h1 { font-size: 34px; margin: 0; letter-spacing: -.02em; text-align: center; }
+  .sub { color: var(--muted); text-align: center; margin: 6px 0 18px; }
+  .stage {
+    background: var(--card); border: 1px solid var(--line); border-radius: 28px;
+    padding: 18px 18px 22px; box-shadow: 0 18px 40px rgba(90,60,45,.08);
   }
-  .bubble {
-    background: var(--bubble); padding: 12px 16px; border-radius: 18px 18px 18px 6px;
-    font-size: 17px; line-height: 1.4; box-shadow: 0 3px 14px rgba(0,0,0,.07);
+  .cat { width: 100%; max-width: 300px; display: block; margin: 0 auto; cursor: pointer; }
+  .cat:active { transform: scale(.985); }
+  .hint { text-align: center; color: var(--muted); font-size: 14px; margin: 2px 0 14px; min-height: 22px; }
+  .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  button {
+    font: inherit; font-weight: 600; color: #fff; border: 0; cursor: pointer;
+    background: var(--accent); border-radius: 16px; padding: 14px 12px;
+    transition: transform .08s, filter .15s;
+    /* Safari на iOS иначе рисует кнопкам свой вид и подсвечивает касание
+       серым прямоугольником, а нажатие отдаёт с задержкой в треть секунды. */
+    -webkit-appearance: none; appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  .me { justify-content: flex-end; }
-  .me .bubble { background: var(--accent); color: #fff; border-radius: 18px 18px 6px 18px; }
-
-  .cta {
-    display: block; margin: 32px auto 0; text-align: center; text-decoration: none;
-    background: var(--accent); color: #fff; font-weight: 700; font-size: 18px;
-    padding: 16px 28px; border-radius: 999px; max-width: 320px;
-    box-shadow: 0 8px 22px rgba(217,128,63,.35);
+  button[disabled] { opacity: .5; cursor: default; }
+  button.ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+  button:active { transform: scale(.97); }
+  button.wide { grid-column: 1 / -1; }
+  button[aria-pressed="true"] { background: var(--accent2); }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 22px; }
+  .links a {
+    color: var(--ink); text-decoration: none; font-size: 15px;
+    border: 1px solid var(--line); background: var(--card);
+    border-radius: 999px; padding: 9px 16px;
   }
-  .foot { text-align: center; color: var(--muted); font-size: 14px; margin-top: 18px; }
-  .foot a { color: inherit; }
+  .facts { margin: 26px 0 0; padding: 0; list-style: none; }
+  .facts li {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 11px 0; border-top: 1px solid var(--line); font-size: 15.5px;
+  }
+  .facts li:first-child { border-top: 0; }
+  .facts b { font-weight: 600; }
+  footer { color: var(--muted); font-size: 13px; margin-top: 26px; text-align: center; }
+  footer a { color: var(--muted); }
+  .heart { position: fixed; pointer-events: none; font-size: 22px; animation: up 1.1s ease-out forwards; }
+  @keyframes up { to { transform: translateY(-70px) scale(1.25); opacity: 0; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <h1>Мурчик</h1>
+<main>
+  <h1>Мурчик 🐱</h1>
   <p class="sub">Кот, который мурчит по-настоящему</p>
 
-  <!-- Тот же кот, что в приложении: те же пропорции и цвета, только в SVG. -->
-  <svg class="cat" id="cat" viewBox="0 0 100 100" aria-label="Кот">
-    <ellipse cx="50" cy="95" rx="30" ry="3" fill="#000" opacity=".08"/>
-    <path d="M66 86 C94 93 103 62 85 50" stroke="var(--cat)" stroke-width="9.5" fill="none" stroke-linecap="round"/>
-    <ellipse cx="50" cy="73" rx="28" ry="24" fill="var(--cat)"/>
-    <ellipse cx="50" cy="78" rx="14.5" ry="16.5" fill="#E3E7EE"/>
-    <path d="M30 28 L44.5 18.5 L27.5 6.5 Z" fill="var(--cat)"/>
-    <path d="M70 28 L55.5 18.5 L72.5 6.5 Z" fill="var(--cat)"/>
-    <path d="M33 26 L43 20 L31 12 Z" fill="#EDA8AE"/>
-    <path d="M67 26 L57 20 L69 12 Z" fill="#EDA8AE"/>
-    <ellipse cx="50" cy="35.5" rx="23.5" ry="20" fill="var(--cat)"/>
-    <ellipse cx="50" cy="46" rx="12.5" ry="7.5" fill="#E3E7EE" opacity=".92"/>
-    <g id="eyes">
-      <ellipse cx="41.5" cy="35.5" rx="5.2" ry="6.8" fill="#7FD0C8"/>
-      <ellipse cx="58.5" cy="35.5" rx="5.2" ry="6.8" fill="#7FD0C8"/>
-      <ellipse cx="41.5" cy="35.5" rx="1.8" ry="5.6" fill="#211A22"/>
-      <ellipse cx="58.5" cy="35.5" rx="1.8" ry="5.6" fill="#211A22"/>
-      <circle cx="39.6" cy="33.4" r="1.5" fill="#fff" opacity=".9"/>
-      <circle cx="56.6" cy="33.4" r="1.5" fill="#fff" opacity=".9"/>
-    </g>
-    <path d="M47.4 44.2 L52.6 44.2 L50 47.5 Z" fill="#E79AA4"/>
-    <path d="M50 47.8 q-2.8 3.9 -5.6 .9 M50 47.8 q2.8 3.9 5.6 .9" stroke="#737D8C" stroke-width="1" fill="none" stroke-linecap="round"/>
-    <g stroke="#fff" stroke-width=".8" stroke-linecap="round" opacity=".9">
-      <path d="M43.8 45.2 L20 42.5"/><path d="M43.8 47.1 L20 47.6"/><path d="M43.8 49 L21 52.4"/>
-      <path d="M56.2 45.2 L80 42.5"/><path d="M56.2 47.1 L80 47.6"/><path d="M56.2 49 L79 52.4"/>
-    </g>
-  </svg>
+  <div class="stage">
+    <!-- Тот же кот, что в приложении: те же пропорции и цвета, только в SVG. -->
+    <svg class="cat" id="cat" viewBox="0 0 100 100" aria-label="Кот. Нажмите, чтобы погладить">
+      <ellipse cx="50" cy="95" rx="30" ry="3" fill="#000" opacity=".08"/>
+      <path d="M66 86 C94 93 103 62 85 50" stroke="var(--cat)" stroke-width="9.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="73" rx="28" ry="24" fill="var(--cat)"/>
+      <ellipse cx="50" cy="78" rx="14.5" ry="16.5" fill="#F6E2C6"/>
+      <path d="M30 28 L44.5 18.5 L27.5 6.5 Z" fill="var(--cat)"/>
+      <path d="M70 28 L55.5 18.5 L72.5 6.5 Z" fill="var(--cat)"/>
+      <path d="M33 26 L43 20 L31 12 Z" fill="#EDA8AE"/>
+      <path d="M67 26 L57 20 L69 12 Z" fill="#EDA8AE"/>
+      <ellipse cx="50" cy="35.5" rx="23.5" ry="20" fill="var(--cat)"/>
+      <ellipse cx="50" cy="46" rx="12.5" ry="7.5" fill="#F6E2C6" opacity=".95"/>
+      <g id="eyes">
+        <ellipse cx="41.5" cy="35.5" rx="5.2" ry="6.8" fill="#8CCB7E"/>
+        <ellipse cx="58.5" cy="35.5" rx="5.2" ry="6.8" fill="#8CCB7E"/>
+        <ellipse cx="41.5" cy="35.5" rx="1.8" ry="5.6" fill="#211A22"/>
+        <ellipse cx="58.5" cy="35.5" rx="1.8" ry="5.6" fill="#211A22"/>
+        <circle cx="39.6" cy="33.4" r="1.5" fill="#fff" opacity=".9"/>
+        <circle cx="56.6" cy="33.4" r="1.5" fill="#fff" opacity=".9"/>
+      </g>
+      <path d="M47.4 44.2 L52.6 44.2 L50 47.5 Z" fill="#E79AA4"/>
+      <path d="M50 47.8 q-2.8 3.9 -5.6 .9 M50 47.8 q2.8 3.9 5.6 .9" stroke="#B4795A" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <g stroke="#fff" stroke-width=".8" stroke-linecap="round" opacity=".95">
+        <path d="M43.8 45.2 L20 42.5"/><path d="M43.8 47.1 L20 47.6"/><path d="M43.8 49 L21 52.4"/>
+        <path d="M56.2 45.2 L80 42.5"/><path d="M56.2 47.1 L80 47.6"/><path d="M56.2 49 L79 52.4"/>
+      </g>
+    </svg>
 
-  <div class="chat" id="chat"></div>
+    <p class="hint" id="hint">Погладьте кота — он ответит</p>
 
-  <a class="cta" href="https://github.com/Miolonixc/MiaoMurApp/releases/latest">Скачать для Android</a>
-  <p class="foot">
-    Требуется Android 12+ · <a href="https://github.com/Miolonixc/MiaoMurApp">исходный код</a>
-  </p>
-</div>
+    <div class="btns">
+      <button id="purr" aria-pressed="false">🎧 Замурчать</button>
+      <button id="meow" class="ghost">🔊 Мяу</button>
+      <button id="buzz" class="ghost wide">📳 Вибро-мурчание в руку</button>
+    </div>
+  </div>
+
+  <ul class="facts">
+    <li><span>📳</span><span><b>Вибрация — главное.</b> Импульсы 24–30 Гц с «дыханием»: вдох громче, выдох тише. Довольный кот переходит на низкий рокот, который слышно ладонью.</span></li>
+    <li><span>🐈</span><span><b>У каждого свой характер.</b> Болтливость, лень, игривость и ласковость выпадают при рождении и видны в повадках.</span></li>
+    <li><span>🎮</span><span><b>Игры вдвоём и в одиночку.</b> Дразнилка, напёрстки, верёвочка, «дай лапу», лазер и мышки. А если кота не трогать, он найдёт занятие сам.</span></li>
+    <li><span>🔒</span><span><b>Никаких данных.</b> У приложения нет доступа в интернет — собрать и отправить что-либо оно физически не может.</span></li>
+  </ul>
+
+  <div class="links">
+    <a href="https://github.com/Miolonixc/MiaoMurApp/releases/latest">Скачать APK</a>
+    <a href="https://t.me/MiaoMurrCat_bot">Написать коту</a>
+    <a href="https://t.me/miaomurrcat">Канал</a>
+    <a href="/privacy.html">Конфиденциальность</a>
+  </div>
+
+  <footer>Мурчик 🐾 · <a href="/privacy.html">данные не собираются</a></footer>
+</main>
 
 <script>
-  // Разговор кота: реплики появляются по одной, чтобы читалось как беседа.
-  const lines = [
-    ['cat', 'Мяу. Ты меня погладишь?'],
-    ['me',  'А что будет?'],
-    ['cat', 'Замурчу. По-настоящему: телефон завибрирует 25 раз в секунду, как настоящее мурчание.'],
-    ['cat', 'Если гладить долго и мне будет хорошо — перейду на низкий рокот. Как трактор.'],
-    ['me',  'А куда тебя гладить?'],
-    ['cat', 'За ушком лучше всего. Пузико тоже, но только когда я тебе доверяю. Иначе поймаю руку лапами.'],
-    ['cat', 'Ещё я ловлю мышек, дышу вместе с тобой, сторожу время и живу на твоих обоях.'],
-    ['me',  'Ты вообще спишь?'],
-    ['cat', 'Сплю. И жду, когда ты вернёшься.'],
-  ];
-
-  const chat = document.getElementById('chat');
-  lines.forEach(([who, text], i) => {
-    const row = document.createElement('div');
-    row.className = 'row' + (who === 'me' ? ' me' : '');
-    row.innerHTML = (who === 'cat' ? '<div class="paw">🐾</div>' : '') +
-                    '<div class="bubble"></div>';
-    row.querySelector('.bubble').textContent = text;
-    chat.appendChild(row);
-    setTimeout(() => row.classList.add('on'), 250 + i * 550);
-  });
-
-  // Кот моргает сам и жмурится, если его погладить.
+(() => {
+  const cat = document.getElementById('cat');
   const eyes = document.getElementById('eyes');
+  const hint = document.getElementById('hint');
+
+  // Кот моргает сам по себе — без этого он выглядит картинкой, а не котом.
   setInterval(() => {
     eyes.style.transition = 'transform .09s';
-    eyes.style.transform = 'scaleY(.1)';
     eyes.style.transformOrigin = '50% 35.5px';
+    eyes.style.transform = 'scaleY(.1)';
     setTimeout(() => (eyes.style.transform = 'scaleY(1)'), 110);
   }, 4200);
 
-  document.getElementById('cat').addEventListener('click', () => {
-    if (navigator.vibrate) {
-      // Тот же ритм, что в приложении: короткий толчок, пауза, снова.
-      navigator.vibrate([15, 26, 15, 26, 15, 26, 15, 26, 15, 26, 15, 26]);
+  function squint(on) {
+    eyes.style.transition = 'transform .25s';
+    eyes.style.transformOrigin = '50% 35.5px';
+    eyes.style.transform = on ? 'scaleY(.35)' : 'scaleY(1)';
+  }
+
+  function say(text) { hint.textContent = text; }
+
+  function heart(x, y) {
+    const el = document.createElement('div');
+    el.className = 'heart';
+    el.textContent = Math.random() < .5 ? '💛' : '🐾';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1100);
+  }
+
+  // --- звук ---------------------------------------------------------------
+  // Мурчание собирается тем же способом, что в приложении: не готовый файл,
+  // а шум, промодулированный пульсом ~25 Гц, плюс низкий «рык». Поэтому оно
+  // не зацикливается слышимым швом и может тянуться сколько угодно.
+  let ctx = null, purrNodes = null;
+
+  // Safari на iOS требует большего, чем просто создать контекст по нажатию.
+  // Во-первых, звук глушится физическим переключателем звонка, пока не
+  // сказано, что это воспроизведение, а не уведомление. Во-вторых, контекст
+  // просыпается только после того, как через него что-то проиграли, — для
+  // этого и нужен беззвучный кадр.
+  function audio() {
+    if (!ctx) {
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) { say('Этот браузер не умеет звук — попробуйте другой'); return null; }
+      ctx = new Ctor();
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+      const wake = ctx.createBufferSource();
+      wake.buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+      wake.connect(ctx.destination);
+      wake.start(0);
     }
-    const bubble = document.createElement('div');
-    bubble.className = 'row on';
-    bubble.innerHTML = '<div class="paw">🐾</div><div class="bubble">мур-р-р-р…</div>';
-    chat.appendChild(bubble);
-    bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  /**
+   * Обёртка для кнопок.
+   *
+   * Любая ошибка внутри обработчика на телефоне выглядит как «кнопка не
+   * работает»: консоли под рукой нет. Поэтому ошибка выводится строкой
+   * под кнопками — её видно и без отладчика.
+   */
+  function onTap(el, fn) {
+    el.addEventListener('click', (e) => {
+      try { fn(e); } catch (err) { say('Не вышло: ' + (err && err.message ? err.message : err)); }
+    });
+  }
+
+  function startPurr() {
+    const ac = audio();
+    if (!ac) return;
+    const noise = ac.createBufferSource();
+    const len = ac.sampleRate * 2;
+    const buf = ac.createBuffer(1, len, ac.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    noise.buffer = buf;
+    noise.loop = true;
+
+    const low = ac.createBiquadFilter();
+    low.type = 'lowpass';
+    low.frequency.value = 460;
+
+    const rumble = ac.createOscillator();
+    rumble.type = 'sine';
+    rumble.frequency.value = 58;
+    const rumbleGain = ac.createGain();
+    rumbleGain.gain.value = 0.16;
+
+    // Пульс: им амплитуда режется на отдельные толчки — это и есть мурчание.
+    const pulse = ac.createOscillator();
+    pulse.type = 'sine';
+    pulse.frequency.value = 25;
+    const pulseDepth = ac.createGain();
+    pulseDepth.gain.value = 0.5;
+
+    const out = ac.createGain();
+    out.gain.value = 0.0001;
+
+    pulse.connect(pulseDepth).connect(out.gain);
+    noise.connect(low).connect(out);
+    rumble.connect(rumbleGain).connect(out);
+    out.connect(ac.destination);
+
+    noise.start(); rumble.start(); pulse.start();
+    out.gain.setTargetAtTime(0.5, ac.currentTime, 0.35);
+    purrNodes = { noise, rumble, pulse, out };
+  }
+
+  function stopPurr() {
+    if (!purrNodes) return;
+    const { noise, rumble, pulse, out } = purrNodes;
+    purrNodes = null;
+    out.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.25);
+    setTimeout(() => { noise.stop(); rumble.stop(); pulse.stop(); }, 700);
+  }
+
+  function meow() {
+    const ac = audio();
+    if (!ac) return;
+    const t = ac.currentTime;
+    const osc = ac.createOscillator();
+    osc.type = 'sawtooth';
+    // Кошачье «мяу» — это скольжение тона вверх и обратно вниз.
+    osc.frequency.setValueAtTime(430, t);
+    osc.frequency.linearRampToValueAtTime(680, t + 0.13);
+    osc.frequency.linearRampToValueAtTime(370, t + 0.42);
+
+    const formant = ac.createBiquadFilter();
+    formant.type = 'bandpass';
+    formant.frequency.value = 1100;
+    formant.Q.value = 4;
+
+    const gain = ac.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.32, t + 0.06);
+    gain.gain.setTargetAtTime(0.0001, t + 0.22, 0.12);
+
+    osc.connect(formant).connect(gain).connect(ac.destination);
+    osc.start(t);
+    osc.stop(t + 0.7);
+  }
+
+  // --- кнопки -------------------------------------------------------------
+  const purrBtn = document.getElementById('purr');
+  onTap(purrBtn, () => {
+    const on = purrBtn.getAttribute('aria-pressed') === 'true';
+    if (on) {
+      stopPurr(); squint(false);
+      purrBtn.setAttribute('aria-pressed', 'false');
+      purrBtn.textContent = '🎧 Замурчать';
+      say('Кот прищурился и ждёт ещё');
+    } else {
+      startPurr(); squint(true);
+      purrBtn.setAttribute('aria-pressed', 'true');
+      purrBtn.textContent = '⏹ Хватит';
+      say('Мур-р-р-р… лучше в наушниках');
+    }
   });
+
+  onTap(document.getElementById('meow'), () => {
+    meow();
+    say('Мяу!');
+  });
+
+  const buzzBtn = document.getElementById('buzz');
+  // Safari на iOS не умеет вибрацию вообще — ни одной строчкой. Честнее
+  // сразу сказать это на кнопке, чем молчать в ответ на нажатие.
+  if (!('vibrate' in navigator)) {
+    buzzBtn.disabled = true;
+    buzzBtn.textContent = '📳 Вибро — только в приложении';
+  }
+  onTap(buzzBtn, () => {
+    if (!navigator.vibrate) {
+      say('Айфон не даёт вибрацию из браузера. В приложении она есть.');
+      return;
+    }
+    // Тот же ритм, что в приложении: короткий толчок, пауза, снова.
+    const wave = [];
+    for (let i = 0; i < 14; i++) wave.push(15, 25);
+    navigator.vibrate(wave);
+    say('Так это ощущается в руке. В приложении — непрерывно');
+  });
+
+  onTap(cat, (e) => {
+    if (navigator.vibrate) navigator.vibrate([15, 25, 15, 25, 15, 25, 15, 25]);
+    squint(true);
+    setTimeout(() => squint(false), 900);
+    heart(e.clientX - 10, e.clientY - 20);
+    say(['мур-р-р…', 'Ещё.', 'Я жмурюсь. Это значит хорошо.', 'Мррр.'][Math.floor(Math.random() * 4)]);
+  });
+})();
 </script>
 </body>
 </html>
